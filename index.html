@@ -4,27 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio</title>
-    <link rel="stylesheet" href="css/estilocrud.css">
+    <title>Registro</title>
+    <link rel="stylesheet" href="">
 </head>
 
 <body>
-    <header class="cabecera">
-        <section id="texto1">
-            <div class="contenedor">
-                <a href="index.html" title="Pagina de inicio">
-                    <img class="logo" src="img/logo.jpg" alt="Technologia inovando en el mundo">
-                </a>
-                <nav class="Menu2">
-                    <a href="index.html">Incio</a>
-                    <a href="contacto.html">Contactos</a>
-                    <a href="servicios.html">Servicios</a>
-                    <a href="paredes.html">Paredes</a>
-                    <a href="registro.html">Registro</a>
-                </nav>
-            </div>
-        </section>
-    </header>
     <h1>REGISTRO DE JUEGOS</h1>
     <form id="crud-form">
         <label for="nombre">Nombre:</label>
@@ -74,7 +58,7 @@
             const clasificacionEdad = document.getElementById("clasificacionEdad").value;
 
             push(
-                ref(database, 'juegosPC_Figueroa'),
+                ref(database, 'Boris_Tiban'),
                 {
                     nombre: nombre,
                     plataforma: plataforma,
@@ -93,7 +77,7 @@
         }
 
         // Escuchar cambios en la base de datos y actualizar la lista
-        onValue(ref(database, 'juegosPC_Figueroa'), (snapshot) => {
+        onValue(ref(database, 'Boris_Tiban'), (snapshot) => {
             const listaRegistros = document.getElementById('lista-registros');
             listaRegistros.innerHTML = '';
 
@@ -126,7 +110,7 @@
             const nuevaClasificacionEdad = prompt('Editar clasificación de edad:', clasificacionEdad);
 
             if (nuevoNombre !== null && nuevaPlataforma !== null && nuevoGenero !== null && nuevaFechaLanzamiento !== null && nuevaClasificacionEdad !== null) {
-                update(ref(database, `juegosPC_Figueroa/${key}`), {
+                update(ref(database, `Boris_Tiban/${key}`), {
                     nombre: nuevoNombre,
                     plataforma: nuevaPlataforma,
                     genero: nuevoGenero,
@@ -140,7 +124,7 @@
             const confirmacion = confirm('¿Seguro que desea eliminar este registro?');
 
             if (confirmacion) {
-                remove(ref(database, `juegosPC_Figueroa/${key}`));
+                remove(ref(database, `Boris_Tiban/${key}`));
             }
         }
     </script>
