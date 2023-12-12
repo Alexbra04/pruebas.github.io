@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+</head>
+<body>
+    <header class="cabecera">
+        <section id="texto1" >
+            <div class="contenedor">
+                <a href="index.html" title="Pagina de inicio">
+                   <img class="logo" src="img/logo.jpg" alt="Technologia inovando en el mundo">
+                </a>
+                <nav class="Menu2">
+                    <a href="inicio.html">Incio</a>
+                    <a href="contacto.html">Contactos</a>
+                    <a href="servicios.html">Servicios</a>
+                    <a href="ubicacion.html">Ubicación</a>
+                    <a href="galeria.html">Galeria</a>                
+                </nav>
+            </div>
+        </section>
+    </header>
+    <h1>Hola Mundo</h1>
+    <form id="crud-form">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre">
+        <label for="edad">Edad:</label>
+        <input type="number" id="edad">
+        <button type="button" onclick="crearRegistro()">Crear</button>
+    </form>
+
+    <ul id="lista-registros"></ul>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBB4VLEuWx4O57s4dfu9ii0BWLWJT33x58",
+            authDomain: "proyectofari.firebaseapp.com",
+            databaseURL: "https://proyectofari-default-rtdb.firebaseio.com",
+            projectId: "proyectofari",
+            storageBucket: "proyectofari.appspot.com",
+            messagingSenderId: "538414020531",
+            appId: "1:538414020531:web:08051bd59c98626d6a3dc6"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        window.crearRegistro = function () {
+            const nombre = document.getElementById("nombre").value;
+            const edad = document.getElementById("edad").value;
+            
+            push(
+                ref(database, 'septimo'),
+                {
+                    name: nombre,
+                    age: edad 
+                }
+            );
+
+            // Limpiar los campos después de agregar
+            document.getElementById('nombre').value = '';
+            document.getElementById('edad').value = '';
+        }
+
+        // Escuchar cambios en la base de datos y actualizar la lista
+        onValue(ref(database, 'septimo'), (snapshot) => {
+            const listaRegistros = document.getElementById('lista-registros');
+            listaRegistros.innerHTML = '';
+
+            snapshot.forEach((childSnapshot) => {
+                const registro = childSnapshot.val();
+                const li = document.createElement('li');
+                li.textContent = ${registro.name}, ${registro.age} años;
+
+                // Botones para editar y eliminar
+                const btnEditar = document.createElement('button');
+                btnEditar.textContent = 'Editar';
+                btnEditar.addEventListener('click', () => editarRegistro(childSnapshot.key, registro.name, registro.age));
+
+                const btnEliminar = document.createElement('button');
+                btnEliminar.textContent = 'Eliminar';
+                btnEliminar.addEventListener('click', () => eliminarRegistro(childSnapshot.key));
+
+                li.appendChild(btnEditar);
+                li.appendChild(btnEliminar);
+
+                listaRegistros.appendChild(li);
+            });
+        });
+
+        window.editarRegistro = function (key, nombre, edad) {
+            const nuevoNombre = prompt('Editar nombre:', nombre);
+            const nuevaEdad = prompt('Editar edad:', edad);
+
+            if (nuevoNombre !== null && nuevaEdad !== null) {
+                update(ref(database, septimo/${key}), {
+                    name: nuevoNombre,
+                    age: nuevaEdad
+                });
+            }
+        }
+
+        window.eliminarRegistro = function (key) {
+            const confirmacion = confirm('¿Seguro que desea eliminar este registro?');
+
+            if (confirmacion) {
+                remove(ref(database, septimo/${key}));
+            }
+        }
+    </script>
+</body>
+</html>
