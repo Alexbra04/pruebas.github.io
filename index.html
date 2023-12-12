@@ -3,33 +3,51 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SERVITIB CRUD</title>
-    <link rel="stylesheet" href="estilos.css">
+    <title>Inicio</title>
+    <link rel="stylesheet" href="css/estilocrud.css">
 </head>
 
 <body>
-    <div class="container">
-        <h2>SERVITIB</h2>
-        <hr />
-        <br />
-        <div class="form">
-            NCedula: <input type="text" name="Cedula" id="Cedula" /> <br /><br />
-            Name:&nbsp; <input type="text" name="name" id="name" /> <br /><br />
-            Genero: <input type="text" name="genero" id="genero" /> <br /><br />
-            Direccion: <input type="text" name="direccion" id="direccion" /> <br /><br />
-        </div>
+    <header class="cabecera">
+        <section id="texto1">
+            <div class="contenedor">
+                <a href="index.html" title="Pagina de inicio">
+                    <img class="logo" src="img/logo.jpg" alt="Technologia inovando en el mundo">
+                </a>
+                <nav class="Menu2">
+                    <a href="index.html">Incio</a>
+                    <a href="contacto.html">Contactos</a>
+                    <a href="servicios.html">Servicios</a>
+                    <a href="paredes.html">Paredes</a>
+                    <a href="registro.html">Registro</a>
+                </nav>
+            </div>
+        </section>
+    </header>
+    <h1>REGISTRO DE JUEGOS</h1>
+    <form id="crud-form">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre">
+        <label for="plataforma">Plataforma:</label>
+        <input type="text" id="plataforma">
+        <label for="genero">Género:</label>
+        <input type="text" id="genero">
+        <label for="fechaLanzamiento">Fecha de Lanzamiento:</label>
+        <input type="date" id="fechaLanzamiento">
+        <label for="clasificacionEdad">Clasificación de Edad:</label>
+        <select id="clasificacionEdad">
+            <option value="Todos">Todos</option>
+            <option value="Adolescentes">Adolescentes (13+)</option>
+            <option value="Adultos">Adultos (17+)</option>
+        </select>
+        <button type="button" onclick="crearRegistro()">Crear</button>
+    </form>
 
-        <div class="button">
-            <button type="button" onclick="crearRegistro()">Crear</button>
-            <button id="Modificar">Modificar</button>
-            <button id="delete">BORRAR</button>
-        </div>
-    </div>
+    <ul id="lista-registros"></ul>
 
-    <!-- Configuración de Firebase -->
-    <script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
@@ -46,36 +64,85 @@
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const database = firebase.database();
-    </script>
+        const database = getDatabase(app);
 
-    <!-- Tu script para CRUD con SERVITIB -->
-    <script>
-        // Función para crear un registro
-        function crearRegistro() {
-            const cedula = document.getElementById("Cedula").value;
-            const name = document.getElementById("name").value;
+        window.crearRegistro = function () {
+            const nombre = document.getElementById("nombre").value;
+            const plataforma = document.getElementById("plataforma").value;
             const genero = document.getElementById("genero").value;
-            const direccion = document.getElementById("direccion").value;
+            const fechaLanzamiento = document.getElementById("fechaLanzamiento").value;
+            const clasificacionEdad = document.getElementById("clasificacionEdad").value;
 
-            // Aquí deberías hacer la operación de creación en la base de datos
-            // Puedes usar push() o set() según tu estructura de datos
-            // Por ejemplo:
-            database.ref('servitibRegistros').push({
-                Cedula: cedula,
-                Name: name,
-                Genero: genero,
-                Direccion: direccion
-            });
+            push(
+                ref(database, 'juegosPC_Figueroa'),
+                {
+                    nombre: nombre,
+                    plataforma: plataforma,
+                    genero: genero,
+                    fechaLanzamiento: fechaLanzamiento,
+                    clasificacionEdad: clasificacionEdad
+                }
+            );
 
             // Limpiar los campos después de agregar
-            document.getElementById('Cedula').value = '';
-            document.getElementById('name').value = '';
+            document.getElementById('nombre').value = '';
+            document.getElementById('plataforma').value = '';
             document.getElementById('genero').value = '';
-            document.getElementById('direccion').value = '';
+            document.getElementById('fechaLanzamiento').value = '';
+            document.getElementById('clasificacionEdad').value = '';
         }
 
-        // Puedes añadir funciones para modificar y eliminar registros de manera similar
+        // Escuchar cambios en la base de datos y actualizar la lista
+        onValue(ref(database, 'juegosPC_Figueroa'), (snapshot) => {
+            const listaRegistros = document.getElementById('lista-registros');
+            listaRegistros.innerHTML = '';
+
+            snapshot.forEach((childSnapshot) => {
+                const registro = childSnapshot.val();
+                const li = document.createElement('li');
+                li.textContent = `Nombre: ${registro.nombre}, Plataforma: ${registro.plataforma}, Género: ${registro.genero}, Fecha de Lanzamiento: ${registro.fechaLanzamiento}, Clasificación de Edad: ${registro.clasificacionEdad}`;
+
+                // Botones para editar y eliminar
+                const btnEditar = document.createElement('button');
+                btnEditar.textContent = 'Editar';
+                btnEditar.addEventListener('click', () => editarRegistro(childSnapshot.key, registro.nombre, registro.plataforma, registro.genero, registro.fechaLanzamiento, registro.clasificacionEdad));
+
+                const btnEliminar = document.createElement('button');
+                btnEliminar.textContent = 'Eliminar';
+                btnEliminar.addEventListener('click', () => eliminarRegistro(childSnapshot.key));
+
+                li.appendChild(btnEditar);
+                li.appendChild(btnEliminar);
+
+                listaRegistros.appendChild(li);
+            });
+        });
+
+        window.editarRegistro = function (key, nombre, plataforma, genero, fechaLanzamiento, clasificacionEdad) {
+            const nuevoNombre = prompt('Editar nombre:', nombre);
+            const nuevaPlataforma = prompt('Editar plataforma:', plataforma);
+            const nuevoGenero = prompt('Editar género:', genero);
+            const nuevaFechaLanzamiento = prompt('Editar fecha de lanzamiento:', fechaLanzamiento);
+            const nuevaClasificacionEdad = prompt('Editar clasificación de edad:', clasificacionEdad);
+
+            if (nuevoNombre !== null && nuevaPlataforma !== null && nuevoGenero !== null && nuevaFechaLanzamiento !== null && nuevaClasificacionEdad !== null) {
+                update(ref(database, `juegosPC_Figueroa/${key}`), {
+                    nombre: nuevoNombre,
+                    plataforma: nuevaPlataforma,
+                    genero: nuevoGenero,
+                    fechaLanzamiento: nuevaFechaLanzamiento,
+                    clasificacionEdad: nuevaClasificacionEdad
+                });
+            }
+        }
+
+        window.eliminarRegistro = function (key) {
+            const confirmacion = confirm('¿Seguro que desea eliminar este registro?');
+
+            if (confirmacion) {
+                remove(ref(database, `juegosPC_Figueroa/${key}`));
+            }
+        }
     </script>
 </body>
 
