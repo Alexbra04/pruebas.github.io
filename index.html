@@ -4,6 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio</title>
+
+    <!-- Importar Firebase y configurar módulo -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+        // Tu configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBB4VLEuWx4O57s4dfu9ii0BWLWJT33x58",
+            authDomain: "proyectofari.firebaseapp.com",
+            databaseURL: "https://proyectofari-default-rtdb.firebaseio.com",
+            projectId: "proyectofari",
+            storageBucket: "proyectofari.appspot.com",
+            messagingSenderId: "538414020531",
+            appId: "1:538414020531:web:08051bd59c98626d6a3dc6"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+    </script>
 </head>
 <body>
     <header class="cabecera">
@@ -34,25 +55,7 @@
     <ul id="lista-registros"></ul>
 
     <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
-      
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBB4VLEuWx4O57s4dfu9ii0BWLWJT33x58",
-            authDomain: "proyectofari.firebaseapp.com",
-            databaseURL: "https://proyectofari-default-rtdb.firebaseio.com",
-            projectId: "proyectofari",
-            storageBucket: "proyectofari.appspot.com",
-            messagingSenderId: "538414020531",
-            appId: "1:538414020531:web:08051bd59c98626d6a3dc6"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-
+        // Resto de tu código
         window.crearRegistro = function () {
             const nombre = document.getElementById("nombre").value;
             const edad = document.getElementById("edad").value;
@@ -78,7 +81,7 @@
             snapshot.forEach((childSnapshot) => {
                 const registro = childSnapshot.val();
                 const li = document.createElement('li');
-                li.textContent = ${registro.name}, ${registro.age} años;
+                li.textContent = `${registro.name}, ${registro.age} años`;
 
                 // Botones para editar y eliminar
                 const btnEditar = document.createElement('button');
@@ -101,7 +104,7 @@
             const nuevaEdad = prompt('Editar edad:', edad);
 
             if (nuevoNombre !== null && nuevaEdad !== null) {
-                update(ref(database, septimo/${key}), {
+                update(ref(database, `septimo/${key}`), {
                     name: nuevoNombre,
                     age: nuevaEdad
                 });
@@ -112,7 +115,7 @@
             const confirmacion = confirm('¿Seguro que desea eliminar este registro?');
 
             if (confirmacion) {
-                remove(ref(database, septimo/${key}));
+                remove(ref(database, `septimo/${key}`));
             }
         }
     </script>
